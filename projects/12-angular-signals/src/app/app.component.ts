@@ -1,0 +1,50 @@
+import { Component, WritableSignal, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Todo } from './todo';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <h1>Building a TODO List</h1>
+    @for(todo of todos(); track $index)  {
+      <label [ngStyle]="{ 'text-decoration': todo.completed ? 'line-through' : 'none' }">
+        <input type="checkbox" [checked]="todo.completed" (change)="updateTodo(todo)"/>
+        {{ todo.title }}
+      </label>
+    }
+  `,
+  styles: `label { display: block }`,
+})
+export class AppComponent {
+  todos: WritableSignal<Todo[]> = signal([
+    {
+      id: 1,
+      title: "Learn Angular",
+      completed: false,
+    },
+    {
+      id: 2,
+      title: "Learn TypeScript",
+      completed: false,
+    },
+    {
+      id: 3,
+      title: "Learn RxJS",
+      completed: false,
+    },
+  ]);
+
+  
+  updateTodo(todo: Todo) {
+    this.todos.update((todos) => {
+      const updatedTodo = todos.map((todoEntry) => {
+        if(todoEntry.id == todo.id) todoEntry.completed = !todoEntry.completed;
+        return todoEntry;
+      });
+
+      return updatedTodo;
+    });
+  }
+}
